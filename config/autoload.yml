@@ -1,0 +1,5 @@
+autoload:
+  mondongo_classes:
+    name: Mondongo classes
+    path: %SF_PLUGINS_DIR%/sfMondongoPlugin/lib/vendor/mondongo/lib
+    recursive:      on
