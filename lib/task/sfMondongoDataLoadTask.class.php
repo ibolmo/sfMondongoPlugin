@@ -121,7 +121,7 @@ EOF;
                     $datums[] = $documents[$reference['class']][$key];
                   }
 
-                  $datum[$name] = $datums;
+                  $datum[$name] = new MondongoGroupArray($datums);
                 }
                 // one
                 else
