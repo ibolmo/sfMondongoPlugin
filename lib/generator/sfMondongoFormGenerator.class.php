@@ -104,15 +104,17 @@ class sfMondongoFormGenerator extends sfGenerator
     {
       $models[$class] = array('definition' => $definition);
 
+      $libDir = str_replace('\\', '/', sfConfig::get('sf_lib_dir'));
+      
       foreach (sfFinder::type('file')->name($class.'.php')->in(sfConfig::get('sf_lib_dir').'/model/mondongo') as $file)
       {
-        $file = str_replace(sfConfig::get('sf_lib_dir').'/model/mondongo', '', $file);
+        $file = str_replace($libDir.'/model/mondongo', '', $file);
         $file = str_replace('/'.$class.'.php', '', $file);
 
         if ($file)
         {
           $plugin = substr($file, 1);
-
+          var_dump($plugin);
           $models[$class]['plugin'] = array(
             'name' => $plugin,
             'dir'  => $this->generatorManager->getConfiguration()->getPluginConfiguration($plugin)->getRootDir(),
