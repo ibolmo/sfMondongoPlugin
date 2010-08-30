@@ -22,6 +22,8 @@
 /**
  * sfWidgetFormMondongoChoice.
  *
+ * Based on sfWidgetFormDoctrineChoice.
+ *
  * @package sfMondongoPlugin
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
@@ -38,6 +40,13 @@ class sfWidgetFormMondongoChoice extends sfWidgetFormChoice
   }
 
   /**
+   * Options:
+   *
+   *   * model:        the model (required)
+   *   * add_empty:    if add an empty option (false by default)
+   *   * method:       the method to show the document (__toString by default)
+   *   * find_options: the options for the find (empty array by default)
+   *
    * @see sfWidgetFormSelect
    */
   protected function configure($options = array(), $attributes = array())
@@ -45,7 +54,6 @@ class sfWidgetFormMondongoChoice extends sfWidgetFormChoice
     $this->addRequiredOption('model');
     $this->addOption('add_empty', false);
     $this->addOption('method', '__toString');
-    $this->addOption('find_query', array());
     $this->addOption('find_options', array());
 
     parent::configure($options, $attributes);
@@ -67,7 +75,7 @@ class sfWidgetFormMondongoChoice extends sfWidgetFormChoice
     $method  = $this->getOption('method');
     foreach ((array) MondongoContainer::getDefault()
       ->getRepository($this->getOption('model'))
-      ->find($this->getOption('find_query'), $this->getOption('find_options'))
+      ->find($this->getOption('find_options'))
     as $document)
     {
       $choices[(string) $document->getId()] = $document->$method();

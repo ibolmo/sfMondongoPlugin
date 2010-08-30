@@ -22,19 +22,35 @@
 /**
  * sfValidatorMondongoChoice.
  *
+ * Based on sfValidatorDoctrineChoice.
+ *
  * @package sfMondongoPlugin
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
 class sfValidatorMondongoChoice extends sfValidatorBase
 {
   /**
+   * Options:
+   *
+   *   * model:    the model (required)
+   *   * field:    the field for choice (_id by default)
+   *   * query:    the query for check (empty array by default)
+   *   * multiple: if it's a choice multiple (false by default)
+   *   * min:      the min of documnents to select (null by default)
+   *   * max:      the max of document to select (null by default)
+   *
+   *  Messages:
+   *
+   *   * min: the message when the choices are less that the min option
+   *   * max: the message when the choices are more that the max option
+   *
    * @see sfValidatorBase
    */
   protected function configure($options = array(), $messages = array())
   {
     $this->addRequiredOption('model');
     $this->addOption('field', '_id');
-    $this->addOption('find_query', null);
+    $this->addOption('query', array());
     $this->addOption('multiple', false);
     $this->addOption('min');
     $this->addOption('max');
@@ -48,10 +64,10 @@ class sfValidatorMondongoChoice extends sfValidatorBase
    */
   protected function doClean($value)
   {
-    $mongoCollection = MondongoContainer::getDefault()->getRepository($this->getOption('model'))->getMongoCollection();
+    $repository = MondongoContainer::getDefault()->getRepository($this->getOption('model'));
 
     $field = $this->getOption('field');
-    $query = $this->getOption('find_query');
+    $query = $this->getOption('query');
 
     if ($this->getOption('multiple'))
     {
@@ -85,9 +101,7 @@ class sfValidatorMondongoChoice extends sfValidatorBase
 
       $query[$field] = array('$in' => $queryValue);
 
-      $cursor = $mongoCollection->find($query);
-
-      if ($cursor->count() != $count)
+      if ($repository->count($query) != $count)
       {
         throw new sfValidatorError($this, 'invalid', array('value' => $value));
       }
@@ -96,9 +110,7 @@ class sfValidatorMondongoChoice extends sfValidatorBase
     {
       $query[$field] = new MongoId($value);
 
-      $cursor = $mongoCollection->find($query);
-
-      if (!$cursor->count())
+      if (!$repository->count($query))
       {
         throw new sfValidatorError($this, 'invalid', array('value' => $value));
       }
